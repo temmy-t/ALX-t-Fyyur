@@ -63,32 +63,38 @@ def index():
 #  Venues
 #  ----------------------------------------------------------------
 
-@app.route('/venues')
+@app.route('/venues')         #implemented by me not succesful yet
 def venues():
   # TODO: replace with real venues data.
   #       num_upcoming_shows should be aggregated based on number of upcoming shows per venue.
-  data=[{
-    "city": "San Francisco",
-    "state": "CA",
-    "venues": [{
-      "id": 1,
-      "name": "The Musical Hop",
-      "num_upcoming_shows": 0,
-    }, {
-      "id": 3,
-      "name": "Park Square Live Music & Coffee",
-      "num_upcoming_shows": 1,
-    }]
-  }, {
-    "city": "New York",
-    "state": "NY",
-    "venues": [{
-      "id": 2,
-      "name": "The Dueling Pianos Bar",
-      "num_upcoming_shows": 0,
-    }]
-  }]
-  return render_template('pages/venues.html', areas=data);
+   
+    venues = Venue.query.order_by(Venue.state, Venue.city).all()
+
+    data = []
+    tmp = {}
+    prev_city = None
+    prev_state = None
+    for venue in venues:
+        venue_data = {
+            'id': venue.id,
+            'name': venue.name,
+            'num_upcoming_shows': len(list(filter(lambda x: x.start_time > datetime.today(),
+                                                  venue.shows)))
+        }
+        if venue.city == prev_city and venue.state == prev_state:
+            tmp['venues'].append(venue_data)
+        else:
+            if prev_city is not None:
+                data.append(tmp)
+            tmp['city'] = venue.city
+            tmp['state'] = venue.state
+            tmp['venues'] = [venue_data]
+        prev_city = venue.city
+        prev_state = venue.state
+
+        data.append(tmp)
+
+    return render_template('pages/venues.html', areas=data)
 
 @app.route('/venues/search', methods=['POST'])
 def search_venues():
@@ -417,6 +423,7 @@ def create_artist_form():
 
 @app.route('/artists/create', methods=['POST'])
 def create_artist_submission():
+    form = ArtistForm()
   # called upon submitting the new artist listing form
   # TODO: insert form data as a new Venue record in the db, instead
   # TODO: modify data to be the data object returned from db insertion
@@ -448,7 +455,7 @@ def create_artist_submission():
         # on successful db insert, flash success
         # TODO: on unsuccessful db insert, flash an error instead
         if error:
-            flash('An error occured. Venue Artist ' +
+            flash('An error occured. Artist ' +
                   request.form['name'] + ' Could not be listed!')
         else:
             flash('Artist ' + request.form['name'] +
