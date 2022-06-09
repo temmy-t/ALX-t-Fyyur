@@ -430,9 +430,9 @@ def create_artist_submission():
         artist.city = request.form['city']
         artist.state = request.form['state']
         artist.phone = request.form['phone']
+        artist.image_link = request.form['image_link']
         tmp_genres = request.form.getlist('genres')
         artist.genres = ','.join(tmp_genres)
-        artist.image_link = request.form['image_link']
         artist.facebook_link = request.form['facebook_link']
         artist.website_link = request.form['website_link']
         artist.looking_for_venues = request.form['seeking_venue']
@@ -451,7 +451,6 @@ def create_artist_submission():
             flash('An error occured. Venue Artist ' +
                   request.form['name'] + ' Could not be listed!')
         else:
-        
             flash('Artist ' + request.form['name'] +
                   ' has been successfully listed!')
     return render_template('pages/home.html')
@@ -512,12 +511,31 @@ def create_shows():
 def create_show_submission():
   # called to create new shows in the db, upon submitting new show listing form
   # TODO: insert form data as a new Show record in the db, instead
+  try:
+    # get form data and create new venue data 
+        error = False
 
-  # on successful db insert, flash success
-  flash('Show was successfully listed!')
+        show = Show()
+        show.artist_id = request.form['artist_id']
+        show.venue_id = request.form['venue_id']
+        show.start_time = request.form['start_time']
+        db.session.add(show)
+        db.session.commit()
+  except:
+        error = True
+        db.session.rollback()
+        print(sys.exc_info())
+  finally:
+        db.session.close()
+        if error:
+
+          # on successful db insert, flash success
+          flash('Show was successfully listed!')
   # TODO: on unsuccessful db insert, flash an error instead.
   # e.g., flash('An error occurred. Show could not be listed.')
   # see: http://flask.pocoo.org/docs/1.0/patterns/flashing/
+        else:
+          flash('An error occured, Show could not be successfully listed!')
   return render_template('pages/home.html')
 
 @app.errorhandler(404)
