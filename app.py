@@ -424,7 +424,7 @@ def create_artist_submission():
     try:
     # get form data and create new venue data 
         error = False
-        
+
         artist = Artist()
         artist.name = request.form['name']
         artist.city = request.form['city']
@@ -442,7 +442,7 @@ def create_artist_submission():
     except:
         error = True
         db.session.rollback()
-        #print(sys.exc_info())
+        print(sys.exc_info())
     finally:
         db.session.close()
         # on successful db insert, flash success
