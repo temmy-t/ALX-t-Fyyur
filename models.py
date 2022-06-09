@@ -12,7 +12,7 @@ db = SQLAlchemy()
  # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Venue(db.Model):
-    __tablename__ = 'Venue'
+    __tablename__ = 'venues'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable = False)
@@ -34,7 +34,7 @@ def __repr__(self):
     # TODO: implement any missing fields, as a database migration using Flask-Migrate
 
 class Artist(db.Model):
-    __tablename__ = 'Artist'
+    __tablename__ = 'artists'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String, nullable = False)
@@ -54,7 +54,7 @@ def __repr__(self):
 # TODO Implement Show and Artist models, and complete all model relationships and properties, as a database migration.
 
 class Show(db.Model):
-    __tablename__ = 'Show'
+    __tablename__ = 'shows'
 
     id = db.Column(db.Integer, primary_key=True)
     artist_id = db.Column(db.Integer, nullable=False)
